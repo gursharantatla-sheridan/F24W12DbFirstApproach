@@ -30,8 +30,13 @@ namespace F24W12DbFirstApproach
 
         private void LoadStudents()
         {
-            var students = db.Students.ToList();
-            grdStudents.ItemsSource = students;
+            //var students = db.Students.ToList();
+
+            var students = from s in db.Students
+                           select new { s.StudentID, s.StudentName, s.Standard.StandardName };
+
+
+            grdStudents.ItemsSource = students.ToList();
         }
 
         private void LoadStandardsInCombobox()
@@ -90,6 +95,35 @@ namespace F24W12DbFirstApproach
 
             LoadStudents();
             MessageBox.Show("Student updated");
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            int id = int.Parse(txtId.Text);
+            var std = db.Students.Find(id);
+
+            db.Students.Remove(std);
+            db.SaveChanges();
+
+            LoadStudents();
+            MessageBox.Show("Student deleted");
+        }
+
+        private void btnSearch_Click(object sender, RoutedEventArgs e)
+        {
+            // query syntax
+            //var students = (from s in db.Students
+            //               where s.StudentName.Contains(txtName.Text)
+            //               select s).ToList();
+
+
+            // method syntax
+            var students = db.Students
+                             .Where(s => s.StudentName.Contains(txtName.Text))
+                             .ToList();
+
+
+            grdStudents.ItemsSource = students;
         }
     }
 }
